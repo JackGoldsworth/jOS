@@ -1,0 +1,6 @@
+# bin
+*.bin
+
+# idea
+out
+.idea/
