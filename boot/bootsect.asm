@@ -1,18 +1,29 @@
-; Basically just copy pasted code just to get a start on things
-; Need to look more into assembly to really get going.
-mov ah, 0x0e ; tty mode
-mov al, 'H'
-int 0x10
-mov al, 'e'
-int 0x10
-mov al, 'l'
-int 0x10
-int 0x10 ; 'l' is still on al, remember?
-mov al, 'o'
-int 0x10
+[bits 16]
+[org 0x7c00]
 
-jmp $ ; jump to current address = infinite loop
+start:
 
-; padding and magic number
-times 510 - ($-$$) db 0
-dw 0xaa55 
+    xor ax,ax
+    mov ds,ax
+    mov es,ax
+    mov bx,0x8000
+
+    mov si, hello_world
+    call print_string
+
+    hello_world db  'Hello World!',13,0
+
+print_string:
+    mov ah, 0x0E
+
+.repeat_next_char:
+    lodsb
+    cmp al, 0
+    je .done_print
+    int 0x10
+    jmp .repeat_next_char
+
+.done_print:
+    ret
+    times (510 - ($ - $$)) db 0x00
+    dw 0xAA55
